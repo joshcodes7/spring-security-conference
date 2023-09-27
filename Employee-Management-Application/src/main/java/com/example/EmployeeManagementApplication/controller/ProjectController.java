@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/project")
+@RequestMapping("/api/v1")
 public class ProjectController {
 
 
@@ -38,7 +39,7 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-    @PostMapping
+    @PostMapping("/project")
     @Transactional
     public ResponseEntity<String> createProject(@RequestBody Project project) {
         // Check if the user has the role "ADMIN"
@@ -76,7 +77,8 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Project created successfully");
     }
 
-    @GetMapping("/{id}")
+    //@PreAuthorize("hasAuthority('ROLE_USER')")
+    @GetMapping("/get_project/{id}")
     public ResponseEntity<?> getProject(@PathVariable Long id) {
         // Check if the provided ID is valid
         if (id == null || id <= 0) {
@@ -102,7 +104,7 @@ public class ProjectController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/project/{id}")
     public ResponseEntity<String> updateProject(@PathVariable Long id, @RequestBody Project project)
     {
         if (id == null || id <= 0) {
@@ -117,24 +119,32 @@ public class ProjectController {
             project1.setTitle(project.getTitle());
             project1.setManagerId(project.getManagerId());
             project1.setStatus(project.getStatus());
-            project1.setEmployee(project.getEmployee());
+//            project1.setEmployee(project.getEmployee());
+
+            List<Employee> updatedEmployees = project.getEmployee();
+            if (updatedEmployees != null) {
+                project1.setEmployee(new ArrayList<>());
+                for (Employee employee : updatedEmployees) {
+                    Optional<Employee> existingEmployee = employeeRepository.findById(employee.getId());
+                    if (existingEmployee.isPresent()) {
+                        project1.getEmployee().add(existingEmployee.get());
+                    }
+                }
+            }
+
+
             projectRepository.save(project1);
 
         }
         return ResponseEntity.ok("Project updated successfully");
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/project/{id}")
     public ResponseEntity<String> deleteProject(@PathVariable Long id) {
         // Check if the provided ID is valid
         if (id == null || id <= 0) {
             return ResponseEntity.badRequest().body("Invalid project ID");
         }
-
-        // Check if the user has the role "ADMIN"
-//        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
-//        }
 
         // Retrieve the project from the database
         Project project = projectService.getProjectById(id);
@@ -143,9 +153,6 @@ public class ProjectController {
         if (project == null) {
             return ResponseEntity.status(HttpStatus.OK).body("Project with ID " + id + " does not exist");
         }
-
-        // Remove the project from the join table
-        //projectService.removeProjectFromEmployeeProject(id);
 
         // Delete the project from the project table
         List<Employee> employees = project.getEmployee();

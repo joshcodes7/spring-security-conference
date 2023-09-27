@@ -2,9 +2,7 @@ package com.example.EmployeeManagementApplication.model;
 
 import com.example.EmployeeManagementApplication.security.Role;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,6 +17,9 @@ import java.util.stream.Collectors;
 @Table(name = "employee")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Employee implements UserDetails {
 
     @Id
@@ -38,7 +39,10 @@ public class Employee implements UserDetails {
     private String email;
 
     @Column(name = "role")
+    @Enumerated(EnumType.STRING)
     private Role role;
+
+
 
     @ManyToMany(mappedBy = "employee", fetch = FetchType.LAZY)//, cascade = CascadeType.REMOVE)
     @JsonBackReference

@@ -11,11 +11,11 @@ public enum Role {
     ROLE_USER;
 
 
-    public String getName() {
-        log.info(this.name()+"hello");
-
-        return this.name();
-
-    }
+//    public String getName() {
+//        log.info(this.name()+"hello");
+//
+//        return this.name();
+//
+//    }
 
 }
