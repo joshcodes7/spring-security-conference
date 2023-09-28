@@ -2,6 +2,7 @@ package com.example.EmployeeManagementApplication.controller;
 
 
 import com.example.EmployeeManagementApplication.dto.ProjectDTO;
+import com.example.EmployeeManagementApplication.dto.ProjectResponse;
 import com.example.EmployeeManagementApplication.model.Employee;
 import com.example.EmployeeManagementApplication.model.Project;
 import com.example.EmployeeManagementApplication.repository.EmployeeRepository;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -42,7 +44,6 @@ public class ProjectController {
     @PostMapping("/project")
     @Transactional
     public ResponseEntity<String> createProject(@RequestBody Project project) {
-        // Create a new project
 
         Optional<Employee> manager = employeeRepository.findById(project.getManagerId());
         if (!manager.isPresent()) {
@@ -145,15 +146,13 @@ public class ProjectController {
             return ResponseEntity.badRequest().body("Invalid project ID");
         }
 
-        // Retrieve the project from the database
         Project project = projectService.getProjectById(id);
 
-        // Check if the project exists
         if (project == null) {
             return ResponseEntity.status(HttpStatus.OK).body("Project with ID " + id + " does not exist");
         }
 
-        // Delete the project from the project table
+
         List<Employee> employees = project.getEmployee();
         for (Employee employee : employees) {
             employee.getProject().remove(project);
@@ -165,5 +164,25 @@ public class ProjectController {
         return ResponseEntity.ok("Project with ID " + id + " deleted");
     }
 
+    @GetMapping("/project/managed/{managerId}")
+    public ResponseEntity<?> getProjectsByManager(@PathVariable Long managerId) {
+        // Check if the provided manager ID is valid
+        if (managerId == null || managerId <= 0) {
+            return ResponseEntity.badRequest().body("Invalid manager ID");
+        }
+
+        // Retrieve the projects for the given manager ID
+        List<Project> projects = projectService.getProjectsByManagerId(managerId);
+
+        if (projects.isEmpty()) {
+            return ResponseEntity.ok("No projects found for manager ID " + managerId);
+        }
+
+        List<ProjectResponse> projectDTOs = projects.stream()
+                .map(project -> new ProjectResponse(project.getId(), project.getTitle()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(projectDTOs);
+    }
 
 }

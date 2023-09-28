@@ -47,6 +47,11 @@ public class ProjectService {
         projectRepository.deleteById(projectId);
     }
 
+    public List<Project> getProjectsByManagerId(Long managerId) {
+        // Assuming ProjectRepository has a method to find projects by managerId
+        return projectRepository.findByManagerId(managerId);
+    }
+
 
 
 
