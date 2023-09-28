@@ -112,14 +112,15 @@ public class EmployeeController {
         }
 
         List<Project> projects = employee.getProject();
+        if(projects != null) {
+            // Remove the employee from each project
+            for (Project project : projects) {
+                project.getEmployee().remove(employee);
+            }
 
-        // Remove the employee from each project
-        for (Project project : projects) {
-            project.getEmployee().remove(employee);
+            // Clear the employee's project set
+            employee.getProject().clear();
         }
-
-        // Clear the employee's project set
-        employee.getProject().clear();
 
         registrationRepository.deleteById(id);
         return ResponseEntity.ok("Employee with ID " + id + " deleted");

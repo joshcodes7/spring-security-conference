@@ -36,10 +36,10 @@ public class WebSecurityConfig {
                         authorizeRequests// URL to be secured
                                 .requestMatchers("/api/v1/register").permitAll()
                                 .requestMatchers("/api/v1/login").permitAll()
-                                .requestMatchers("/api/v1/employee/**").permitAll()
-                                .requestMatchers("/api/v1/project/**").permitAll()
-                                .requestMatchers("/api/v1/get_employee/**").hasRole("USER")
-                                .requestMatchers("/api/v1/get_project/**").hasRole("USER")
+                                .requestMatchers("/api/v1/employee/**").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/project/**").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/get_employee/**").permitAll()
+                                .requestMatchers("/api/v1/get_project/**").permitAll()
                                 .anyRequest().authenticated()
                                 .and().authenticationProvider(authenticationProvider)
                                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)// Allow all other requests without authentication

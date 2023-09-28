@@ -42,11 +42,6 @@ public class ProjectController {
     @PostMapping("/project")
     @Transactional
     public ResponseEntity<String> createProject(@RequestBody Project project) {
-        // Check if the user has the role "ADMIN"
-//        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
-//        }
-
         // Create a new project
 
         Optional<Employee> manager = employeeRepository.findById(project.getManagerId());
@@ -72,6 +67,10 @@ public class ProjectController {
                 project.setStatus("todo");
                 projectRepository.save(project);
             }
+        }
+        else{
+            project.setStatus("todo");
+            projectRepository.save(project);
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Project created successfully");

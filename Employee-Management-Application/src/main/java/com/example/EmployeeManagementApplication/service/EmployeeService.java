@@ -51,8 +51,8 @@ public class EmployeeService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         var employee = Employee.builder()
-                .firstName(request.getFirstname())
-                .lastName(request.getLastname())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
