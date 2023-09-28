@@ -54,10 +54,6 @@ public class EmployeeController {
 
     @PostMapping("/employee")
     public ResponseEntity<String> createEmployee(@RequestBody Employee employeeDto) {
-        // Check if the user has the role "ADMIN"
-//        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
-//        }
 
         employeeDto.setPassword(passwordEncoder.encode(employeeDto.getPassword()));
         employeeDto.setRole(Role.ROLE_USER);
