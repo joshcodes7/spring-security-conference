@@ -43,6 +43,12 @@ public class Employee implements UserDetails {
     private Role role;
 
 
+    public Employee(long id, String firstName, String lastName, String email) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+    }
 
     @ManyToMany(mappedBy = "employee", fetch = FetchType.LAZY)//, cascade = CascadeType.REMOVE)
     @JsonBackReference

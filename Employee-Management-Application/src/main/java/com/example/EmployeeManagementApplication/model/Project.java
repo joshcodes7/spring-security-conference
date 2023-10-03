@@ -6,12 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "project")
 @Getter
-@NoArgsConstructor
+//@NoArgsConstructor
 @Setter
 public class Project {
 
@@ -39,4 +41,16 @@ public class Project {
     )
     private List<Employee> employee;
 
+    public Project(long id, String title) {
+        this.id = id;
+        this.title=title;
+    }
+
+    public Project(Long managerId) {
+        this.managerId = managerId;
+    }
+
+    public Project() {
+        this.employee = new ArrayList<>();
+    }
 }

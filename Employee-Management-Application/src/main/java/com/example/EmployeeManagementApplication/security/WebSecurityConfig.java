@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
@@ -31,7 +31,7 @@ public class WebSecurityConfig {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .formLogin().disable()
-                .securityMatcher("/api/v1/**")
+                //.securityMatcher("/api/v1/**")
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests// URL to be secured
                                 .requestMatchers("/api/v1/register").permitAll()
@@ -40,6 +40,17 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/v1/project/**").hasRole("ADMIN")
                                 .requestMatchers("/api/v1/get_employee/**").permitAll()
                                 .requestMatchers("/api/v1/get_project/**").permitAll()
+                                .requestMatchers("/v2/api-docs").permitAll()
+                                .requestMatchers(
+                                        "/swagger-ui.html",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources",
+                                        "/swagger-resources/**",
+                                        "/configuration/ui",
+                                        "/configuration/security",
+                                        "/swagger-ui/**",
+                                        "/webjars/**").permitAll()
                                 .anyRequest().authenticated()
                                 .and().authenticationProvider(authenticationProvider)
                                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)// Allow all other requests without authentication

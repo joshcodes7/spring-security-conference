@@ -9,6 +9,8 @@ import com.example.EmployeeManagementApplication.repository.EmployeeRepository;
 import com.example.EmployeeManagementApplication.repository.ProjectRepository;
 import com.example.EmployeeManagementApplication.service.EmployeeService;
 import com.example.EmployeeManagementApplication.service.ProjectService;
+
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
+@SecurityRequirement(name = "BearerAuth")
 public class ProjectController {
 
 
@@ -85,15 +88,12 @@ public class ProjectController {
             return ResponseEntity.badRequest().body("Invalid project ID");
         }
 
-        // Retrieve the project from the database
         Project project = projectService.getProjectById(id);
 
-        // Check if the project exists
         if (project == null) {
             return ResponseEntity.status(HttpStatus.OK).body("Project with ID " + id + " does not exist");
         }
 
-        // Get the title, manager ID, and assignees
         String title = project.getTitle();
         Long managerId = project.getManagerId();
         List<String> assignees = projectService.getAssigneesNames(id);
@@ -141,7 +141,7 @@ public class ProjectController {
 
     @DeleteMapping("/project/{id}")
     public ResponseEntity<String> deleteProject(@PathVariable Long id) {
-        // Check if the provided ID is valid
+
         if (id == null || id <= 0) {
             return ResponseEntity.badRequest().body("Invalid project ID");
         }
@@ -151,7 +151,6 @@ public class ProjectController {
         if (project == null) {
             return ResponseEntity.status(HttpStatus.OK).body("Project with ID " + id + " does not exist");
         }
-
 
         List<Employee> employees = project.getEmployee();
         for (Employee employee : employees) {
@@ -166,12 +165,11 @@ public class ProjectController {
 
     @GetMapping("/project/managed/{managerId}")
     public ResponseEntity<?> getProjectsByManager(@PathVariable Long managerId) {
-        // Check if the provided manager ID is valid
+
         if (managerId == null || managerId <= 0) {
             return ResponseEntity.badRequest().body("Invalid manager ID");
         }
 
-        // Retrieve the projects for the given manager ID
         List<Project> projects = projectService.getProjectsByManagerId(managerId);
 
         if (projects.isEmpty()) {
