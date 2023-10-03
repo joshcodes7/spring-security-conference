@@ -118,7 +118,12 @@ public class ProjectController {
 
             project1.setTitle(project.getTitle());
             project1.setManagerId(project.getManagerId());
-            project1.setStatus(project.getStatus());
+            String status = project.getStatus();
+            if (status != null && (status.equals("todo") || status.equals("in progress") || status.equals("completed"))) {
+                project1.setStatus(status);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid project status");
+            }
 //            project1.setEmployee(project.getEmployee());
 
             List<Employee> updatedEmployees = project.getEmployee();
